@@ -18,12 +18,13 @@ public class Player : MonoBehaviour
 	private bool movable;
 
 	public GameObject SelecterPrefab;
+	public GameObject SelecterPathPrefab;
 	public GameObject ArrowPrefab;
 	public float shootForce;
 
 	private GameObject selecter;
 	private Vector3 targetPos;
-
+	private List<GameObject> selecterPath;
 
 	public float speed = 1f;
 
@@ -36,6 +37,8 @@ public class Player : MonoBehaviour
 
 	private bool steepArrow = false;
 	private bool flippedArrow = false;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +48,8 @@ public class Player : MonoBehaviour
 
 				selectionMode = false;
 				movable = true;
+
+				selecterPath = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -60,12 +65,16 @@ public class Player : MonoBehaviour
 		if(selectionMode){
 
 		Vector3 startSel = selecter.transform.position;
+
 		Vector3 Dir = new Vector3(0,0,0);
+		bool moved = false;
+
 		if (Input.GetKeyDown("up"))
 		{
 
 			Dir = new Vector3(0,speed,0);
 			selecter.transform.position = startSel+Dir;
+			moved = true;
 
 		}
 
@@ -74,6 +83,7 @@ public class Player : MonoBehaviour
 
 			Dir = new Vector3(0,-speed,0);
 			selecter.transform.position = startSel+Dir;
+			moved = true;
 		}
 
 		if (Input.GetKeyDown("right"))
@@ -81,6 +91,7 @@ public class Player : MonoBehaviour
 
 			Dir = new Vector3(speed,0,0);
 			selecter.transform.position = startSel+Dir;
+			moved = true;
 
 		}
 		if (Input.GetKeyDown("left"))
@@ -88,8 +99,24 @@ public class Player : MonoBehaviour
 
 			Dir = new Vector3(-speed,0,0);
 			selecter.transform.position = startSel+Dir;
+			moved = true;
+
+		}
+
+		if(moved){
+			Vector3 targetPos = selecter.transform.position;
+
+			foreach(GameObject pathTile in selecterPath){
+				Destroy(pathTile);
+			}
+
+			List<(int,int)> arrowPath = BresenhamLine( ((int)Mathf.Floor(transform.position.x), (int)Mathf.Floor(transform.position.y)), ((int)Mathf.Floor(targetPos.x), (int)Mathf.Floor(targetPos.y)));
 
 
+			foreach((int,int) point  in arrowPath){
+				GameObject pathTile = GameObject.Instantiate(SelecterPathPrefab, new Vector3 (point.Item1,point.Item2,0), transform.rotation);
+				selecterPath.Add(pathTile);
+			}
 		}
 		//select target and shoot, automatically quit mode
 		if (Input.GetKeyDown(KeyCode.Return)){
@@ -107,6 +134,9 @@ public class Player : MonoBehaviour
 			selectionMode = false;
 			movable =false;
 
+			foreach(GameObject pathTile in selecterPath){
+				Destroy(pathTile);
+			}
 
 			List<(int,int)> arrowPath = BresenhamLine( ((int)Mathf.Floor(transform.position.x), (int)Mathf.Floor(transform.position.y)), ((int)Mathf.Floor(targetPos.x), (int)Mathf.Floor(targetPos.y)));
 
@@ -141,10 +171,6 @@ public class Player : MonoBehaviour
 			Arrow arrow = shot.GetComponent<Arrow>();
 			arrow.arrowPath = arrowPath;
 
-
-
-
-
 			StartCoroutine(WaitandTurn0n(arrow));
 
 			return;
@@ -152,6 +178,9 @@ public class Player : MonoBehaviour
 		//quit target selection mode
 		if(Input.GetKeyDown(KeyCode.T)){
 			Destroy(selecter);
+			foreach(GameObject pathTile in selecterPath){
+				Destroy(pathTile);
+			}
 			selectionMode = false;
 		}
 
@@ -174,12 +203,7 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	//shoot arrow -TEST-
-	if(Input.GetKeyDown(KeyCode.F)){
-		GameObject shot = GameObject.Instantiate(ArrowPrefab, transform.position, transform.rotation);
-		shot.GetComponent<Rigidbody2D>().AddForce(transform.right * shootForce);
-		GameManager.instance.playerTurn = false;
-	}
+
 
 	//drink potion
 	if(Input.GetKeyDown(KeyCode.D)){
