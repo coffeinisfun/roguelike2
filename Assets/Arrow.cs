@@ -5,6 +5,7 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
 
+
 	private BoxCollider2D boxCollider;
 	public bool stop = false;
 	public List<(int,int)> arrowPath;
@@ -29,11 +30,12 @@ public class Arrow : MonoBehaviour
 				if(col.gameObject.tag == "Enemy"){
 					Enemy hitEnemy = col.gameObject.GetComponent<Enemy>();
 					hitEnemy.health--;
-					print(hitEnemy.health);
+					print("enemyhealth: " +hitEnemy.health);
 				}
 				Destroy(gameObject);
 
 			}
+
 		}
 
 		IEnumerator Travel(List<(int,int)> path){
@@ -44,8 +46,8 @@ public class Arrow : MonoBehaviour
 				Vector3 pos = new Vector3(point.Item1,point.Item2,0);
 				transform.position = pos;
 			}
-			stop = true;
-			Debug.Log(stop);
+			//wait so boxcollider can trigger
+			StartCoroutine(WaitAndBecomeLoot());
 		}
 
 		//Bresenham for digitalize way of arrow
@@ -104,6 +106,15 @@ public class Arrow : MonoBehaviour
 			points.RemoveAt(0);
 			return points;
 
+		}
+
+		IEnumerator WaitAndBecomeLoot(){
+			yield return new WaitForSeconds(0.2f);
+			stop = true;
+			Debug.Log("stop:" + stop);
+
+			GameManager.instance.createLoot((int)transform.position.x, (int)transform.position.y, 1, 0);
+			Destroy(gameObject);
 		}
 
 

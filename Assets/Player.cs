@@ -212,8 +212,9 @@ public class Player : MonoBehaviour
 		}
 		else{
 			potionCount--;
-			health = Mathf.Min(maxHealth, health+1);
+			health = Mathf.Min(maxHealth, health+5);
 			Debug.Log("You drank one potion. You're health is now " + health +".");
+			GameManager.instance.playerTurn = false;
 		}
 	}
 	//movement
@@ -263,19 +264,12 @@ public class Player : MonoBehaviour
 
 		boxCollider.enabled = true;
 		if (hit.transform != null ){
+			Debug.Log("Raycast hit something");
 
 			if (hit.collider.gameObject.tag == "Enemy"){
 				StartCoroutine(EnemyHit(start, moveDir));
 				Enemy hitEnemy = hit.collider.gameObject.GetComponent<Enemy>();
 				hitEnemy.health --;
-			}
-
-
-
-			if(hit.collider.gameObject.tag == "Exit"){
-
-				Debug.Log("You reached the exit!");
-				transform.position = end;
 			}
 
 		}
@@ -287,15 +281,17 @@ public class Player : MonoBehaviour
 					Loot loot = hit.collider.gameObject.GetComponent<Loot>();
 					arrowCount += loot.arrows;
 					potionCount += loot.potions;
+					GameManager.instance.loots.Remove(loot);
 					Destroy(hit.collider.gameObject);
 					transform.position = end;
 				}
-				if (hit.collider.gameObject.tag == "Arrow"){
-					print("hit arrow");
-					arrowCount += 1;
-					Destroy(hit.collider.gameObject);
+				if(hit.collider.gameObject.tag == "Exit"){
+
+					Debug.Log("You reached the exit!");
 					transform.position = end;
+					GameManager.instance.levelFinished = true;
 				}
+
 
 
 			}

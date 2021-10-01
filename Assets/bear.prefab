@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f7ada9511e4f606e1aee64770a96638e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2de491b57ea505f248347c01ed258cd4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,10 +99,14 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
+  wolfImage: {fileID: 21300000, guid: 38054195cf2b2145bb7da42c8baa1b12, type: 3}
+  boarImage: {fileID: 21300000, guid: bc1cd0a4fba1eddf4a187caa775c33d7, type: 3}
+  bearImage: {fileID: 21300000, guid: 2de491b57ea505f248347c01ed258cd4, type: 3}
   maxDist: 8
   health: 2
+  attackDmg: 1
   dead: 0
-  isTurn: 1
+  isTurn: 0
 --- !u!61 &6379791155691299471
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -120,7 +124,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.96666664, y: 0.55}
     newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
